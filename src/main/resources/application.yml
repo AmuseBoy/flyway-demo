@@ -17,4 +17,4 @@ spring:
     sql-migration-separator: __
     sql-migration-suffixes: .sql
     validate-on-migrate: true
-    baseline-on-migrate: false
+    baseline-on-migrate: true #如果是项目中途使用flyway,配置true

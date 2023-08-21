@@ -24,21 +24,20 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 @EnableTransactionManagement
 public class FlywayConfig {
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     @Value("${spring.flyway.locations}")
     private String SQL_LOCATION;
 
+    @Value("${spring.flyway.baseline-on-migrate}")
+    private boolean BASELINE_ON_MIGRATE;
+
 //    @Value("${spring.flyway.table}")
 //    private String VERSION_TABLE;
-
-//    @Value("${spring.flyway.baseline-on-migrate}")
-//    private boolean BASELINE_ON_MIGRATE;
 
 //    @Value("${spring.flyway.out-of-order}")
 //    private boolean OUT_OF_ORDER;
@@ -47,21 +46,15 @@ public class FlywayConfig {
 //    private boolean VALIDATE_ON_MIGRATE;
 
     @Bean
-//    @PostConstruct
     public void migrateOrder() {
-        System.out.println("sssssssssssssssssss"+ SQL_LOCATION);
-        log.info("调用数据库生成工具");
         DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;
         Map<String, DataSource> dataSources = ds.getDataSources();
         dataSources.forEach((k, v) -> {
-            log.info("正在执行多数据源生成数据库文件 " + k);
-            System.out.println(SQL_LOCATION + "/" + k);
+            log.info("正在执行多数据源生成数据库文件 " + SQL_LOCATION + "/" + k);
             Flyway flyway = Flyway.configure()
                     .dataSource(v)
                     .locations(SQL_LOCATION + "/" + k)
-
-
-//                    .baselineOnMigrate(BASELINE_ON_MIGRATE)
+                    .baselineOnMigrate(BASELINE_ON_MIGRATE)
 //                    .table(VERSION_TABLE)
 //                    .outOfOrder(OUT_OF_ORDER)
 //                    .validateOnMigrate(VALIDATE_ON_MIGRATE)
